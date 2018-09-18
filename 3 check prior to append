@@ -1,0 +1,50 @@
+	local datafiles : dir "$ir_unzipdtas" files "*ir*.dta"
+	foreach f of local datafiles {
+	
+		di "Starting work on `f'"
+		
+		use "$ir_unzipdtas/`f'", clear
+		renvars, lower
+		_strip_labels *
+		keep if _n == 1
+
+		* keep certain variables
+
+		isvar $allkeep
+		keep `r(varlist)' 
+
+		* replace numerical variables
+		
+		quietly ds, not(type string)
+		foreach var of varlist `r(varlist)' {
+			quietly replace `var' = .
+		}
+		
+		quietly ds, has(type string)
+		foreach var of varlist `r(varlist)' {
+			quietly replace `var' = ""
+		}
+		
+		* save each file
+		
+		cd "$precombine_check"
+		save "`f'", replace
+	}
+
+	* list of variable descriptions
+	
+	cd "$precombine_check"
+	cap log close
+	log using "$rawvardesc" , replace
+	precombine , describe(varlab) uniquevars clear
+	log close
+	
+	replace varlab = lower(varlab)
+	replace varlab = subinstr(varlab,"na - ","",.)
+	replace varlab = subinstr(varlab," - na","",.)
+	replace varlab = subinstr(varlab," -na","",.)
+	replace varlab = stritrim(strtrim(varlab))
+	duplicates drop variable varlab, force
+	keep variable dataset ndta varlab
+	save "$rawvardesc" , replace
+
