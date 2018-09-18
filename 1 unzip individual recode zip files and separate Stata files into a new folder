@@ -1,0 +1,23 @@
+
+	***** unzip contents into a new folder
+	
+	local zipfiles : dir "$zipped" files "*.zip"
+	cd "$unzipped"
+	foreach zf of local zipfiles {
+		di "Working on `zf'"
+		unzipfile "$ir_sourcedir/`zf'", replace
+	}
+	
+	***** specifically unzip SN7Q* and SN70* since they each have 2 zip files within their main zip file
+	
+	unzipfile "$ir_unzipdir/SNIR70DT.zip", replace
+	unzipfile "$ir_unzipdir/SNIR7QDT.zip", replace
+	
+	***** separate stata files into a new folder
+	
+	local datafiles : dir "$ir_unzipdir" files "*ir*.dta"
+	foreach df of local datafiles {
+		di "Working on `df'"
+		use "$ir_unzipdir/`df'", clear
+		save "$ir_unzipdtas/`df'", replace
+	}
