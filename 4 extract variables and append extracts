@@ -1,0 +1,65 @@
+	***** create an empty dataset
+
+	clear all
+	input str10 file_ir
+	"delete"
+	end
+	tempfile ir_nr
+	save `ir_nr'
+
+	***** start extraction
+
+	local datafiles : dir "$ir_unzipdtas" files "*ir*.dta"
+	foreach f of local datafiles {
+	
+		di "Starting work on `f'"
+		use "$ir_unzipdtas/`f'", clear
+		renvars, lower
+		duplicates drop
+
+		* create identifier for each survey file
+
+		local newfilename = substr("`f'", 1, 6)
+		gen file_ir = "`newfilename'"
+		replace file_ir = upper(file_ir)
+
+		* rename caseid (if needed)
+		
+		isvar case_id
+		capture rename `r(varlist)' caseid
+
+		* keep certain variables (defined at the top)
+
+		isvar $mustkeep $otherkeep
+		keep `r(varlist)'
+		
+		* create string versions of anything with a label
+		
+		ds, has(vallabel)
+		local varvallab `r(varlist)'
+		foreach var of local varvallab {
+			decode `var', gen(`var'_dec)
+		}
+		
+		* precombine check noted same variable captures different information depending on the survey
+		* age at first cohabitation | age at first marriage
+		
+		isvar v511
+		if _rc == 0 {
+			gen v511_lab = "" , after(v511)
+			local varlab : variable label v511
+			replace v511_lab = "`varlab'"
+		}
+
+		* append files
+
+		tempfile `newfilename'kept
+		save ``newfilename'kept'
+
+		use `ir_nr' , clear
+		append using ``newfilename'kept'
+		save `ir_nr' , replace
+
+	}
+
+	save "$ir_nr", replace
