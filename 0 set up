@@ -24,9 +24,9 @@
 
 	***** list folders
 	
-	global root				"$username\project"
-	global zipped			"$root\DHS\zipped"
-	global unzipped		"$root\DHS\unzipped"
-	global dtas				"$root\DHS\unzipped stata"
+	global root       "$username\project"
+	global zipped     "$root\DHS\zipped"
+	global unzipped   "$root\DHS\unzipped"
+	global dtas       "$root\DHS\unzipped stata"
 
 	***** list files
