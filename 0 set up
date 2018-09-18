@@ -1,0 +1,27 @@
+	
+	clear all
+	set maxvar 15000
+	set varabbrev off
+	
+	***** install commands as needed
+	
+// 	ssc install isvar
+// 	ssc install renvars
+// 	ssc install estout
+// 	ssc install mdesc
+// 	ssc install docvars
+// 	ssc install distinct
+// 	ssc install ftools
+// 	ssc install moremata
+// 	ssc install copydesc
+// 	ssc install retainlbl
+
+	***** list users
+
+	if "`c(username)'" == "roroxom" {
+		global username "C:\Users\ROROXOM" 
+	}
+
+	***** list folders
+	
+	global root					"$username\Center for Global Development\Center For Global Development - NDrive\NB_Reproductive Ecosystem"
