@@ -21,3 +21,5 @@
 		use "$ir_unzipdir/`df'", clear
 		save "$ir_unzipdtas/`df'", replace
 	}
+
+	* test
