@@ -1,0 +1,29 @@
+	use "$ir_nr", clear
+
+	* remove delete
+	
+	drop if file_ir == "delete"
+	
+	* PEIR51 has data for 2 surveys
+	
+	replace file_ir = "PEIR5A" if file_ir == "PEIR51" & inrange(v007,2007,2008)
+
+	* AIS surveys contain men and women
+	
+	replace aidsex_dec = lower(aidsex_dec)
+	replace aidsex_dec = "female" if aidsex_dec == "women"
+	replace aidsex_dec = "male" if aidsex_dec == "men"
+	drop if aidsex_dec == "male"
+	drop aidsex*
+	
+	* remove duplicates in Dominican Republic's file
+	
+	duplicates drop file_ir caseid if file_ir == "DRIR21" & inlist(caseid,"      7 62 1  2","    127  8 1  2"), force
+	
+	* remove labels
+	
+	_strip_labels *
+	
+	* save
+	
+	save "$ir_tc", replace
